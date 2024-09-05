@@ -32,7 +32,7 @@ def generate_subkeys(master_key):
         subkeys.append(subkey)
     return subkeys
 
-
+#Функция режима шифрования с простой заменой
 def encrypt_block(block, subkeys):
     n1 = int.from_bytes(block[:4], byteorder='little')
     n2 = int.from_bytes(block[4:], byteorder='little')
@@ -50,7 +50,7 @@ def gost_ofb_encrypt(plaintext, master_key, iv):
     output = b''
     gamma = iv
     for i in range(0, len(plaintext), 8):
-        gamma = encrypt_block(gamma, subkeys)
+        gamma = encrypt_block(gamma, subkeys) #Используем шифрование с простой заменой для получения гаммы
         block = plaintext[i:i + 8]
         # Дополнение блока до 8 байт
         if len(block) < 8:
