@@ -74,7 +74,7 @@ def menu():
     choice = input("Введите номер действия: ")
     return choice
 
-    # m_p = c^(p+1)/4 mod p
+
 def main():
     N, p, q = None, None, None
 
