@@ -168,7 +168,7 @@ class GOST3411:
     ]
 
     @staticmethod
-    def modular_addition(a, b): 
+    def modular_addition(a, b):
         result = [0] * 64
         carry = 0
 
