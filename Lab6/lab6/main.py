@@ -1,5 +1,5 @@
 import random
-from gost3411 import GOST3411  # Подключение класса gost3411
+from gost3411 import GOST3411  
 from math import isqrt
 from pathlib import Path
 
