@@ -3,6 +3,7 @@ from gost3411 import GOST3411  # Подключение класса gost3411
 from math import isqrt
 from pathlib import Path
 
+
 class Gost3410Signature:
     @staticmethod
     def generate_prime_q():
@@ -97,6 +98,5 @@ class Gost3410Signature:
         print(f"Signature valid: {is_valid}")
 
 
-# Запуск программы
 if __name__ == "__main__":
     Gost3410Signature.main()
