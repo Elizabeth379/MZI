@@ -1,5 +1,5 @@
 import random
-from gost3411 import GOST3411  
+from gost3411 import GOST3411
 from math import isqrt
 from pathlib import Path
 
@@ -88,9 +88,8 @@ class Gost3410Signature:
 
         # Генерация подписи и запись в файл
         r, s = Gost3410Signature.generate_signature(message, p, q, g, x)
-        signature = f"{r:064X}{s:064X}"
+        signature = f"{r:X}{s:X}"
         signature_file_path.write_text(signature, encoding='utf-8')
-
         print(f"Generated signature: {signature}")
 
         # Проверка подписи
