@@ -1,40 +1,54 @@
-import random
-from typing import List
-from EllipticCurvePoint import EllipticCurvePoint  # Импортируем класс из отдельного файла
+from EllipticCurvePoint import EllipticCurvePoint
+from Crypto.Random import random
+from Crypto.Util.number import long_to_bytes, bytes_to_long
 
 
-def generate_random_big_integer(N: int) -> int:
-    while True:
-        r = random.getrandbits(N.bit_length())
-        if r < N:
-            return r
+class ElGamal:
+    @staticmethod
+    def generate_random_big_integer(N):
+        # Генерация случайного числа, меньшего N
+        bytes_len = (N.bit_length() + 7) // 8
+        while True:
+            r = random.getrandbits(bytes_len * 8) % N
+            if r < N:
+                return r
 
+    @staticmethod
+    def get_point_from_bytes(message_bytes, P):
+        # Преобразование байтового сообщения в точку эллиптической кривой
+        p_length = (P.p.bit_length() + 7) // 8
+        if len(message_bytes) >= p_length - 2:
+            raise Exception(f"M({len(message_bytes)}) should be less than p (Max M Length = {p_length - 2} symbols)")
 
-def get_point_from_bytes(message_bytes: bytes, P: EllipticCurvePoint) -> EllipticCurvePoint:
-    p_length = (P.p.bit_length() + 7) // 8
-    if len(message_bytes) >= p_length - 2:
-        raise Exception(
-            f"M({len(message_bytes)}) должно быть меньше p (Максимальная длина M = {p_length - 2} символов)")
+        # Дополнение сообщения байтами для преобразования в координату x
+        message = message_bytes + bytes([0xff]) + b'\x00' * (p_length - len(message_bytes) - 1)
+        return EllipticCurvePoint(
+            x=bytes_to_long(message),
+            y=0,
+            a=P.a,
+            b=P.b,
+            p=P.p
+        )
 
-    message = message_bytes + bytes([0xff]) + bytes([0] * (p_length - len(message_bytes) - 1))
-    return EllipticCurvePoint(int.from_bytes(message, 'big'), 0, P.a, P.b, P.p)
+    @staticmethod
+    def get_bytes_from_point(P):
+        # Извлечение сообщения из координаты x точки эллиптической кривой
+        message_bytes = long_to_bytes(P.x)
+        if 0xff in message_bytes:
+            return message_bytes[:message_bytes.index(0xff)]
+        return message_bytes
 
+    @staticmethod
+    def encrypt(message_bytes, P, Q):
+        M = ElGamal.get_point_from_bytes(message_bytes, P)
+        k = ElGamal.generate_random_big_integer(P.p)
+        C1 = P.multiply(k)
+        C2 = M + Q.multiply(k)
+        return C1, C2
 
-def get_bytes_from_point(P: EllipticCurvePoint) -> bytes:
-    message_bytes = P.x.to_bytes((P.x.bit_length() + 7) // 8, 'big')
-    return message_bytes[:message_bytes.rfind(b'\xff')]
-
-
-def encrypt(message_bytes: bytes, P: EllipticCurvePoint, Q: EllipticCurvePoint) -> List[EllipticCurvePoint]:
-    M = get_point_from_bytes(message_bytes, P)
-    k = generate_random_big_integer(P.p)
-    C1 = EllipticCurvePoint.multiply(P, k)
-    C2 = M + EllipticCurvePoint.multiply(Q, k)
-    return [C1, C2]
-
-
-def decrypt(C_values: List[EllipticCurvePoint], d: int) -> bytes:
-    temp = EllipticCurvePoint.multiply(C_values[0], d)
-    temp.y = -temp.y % temp.p
-    P = temp + C_values[1]
-    return get_bytes_from_point(P)
+    @staticmethod
+    def decrypt(CValues, d):
+        temp = CValues[0].multiply(d)
+        temp.y = -temp.y % temp.p
+        P = temp + CValues[1]
+        return ElGamal.get_bytes_from_point(P)
