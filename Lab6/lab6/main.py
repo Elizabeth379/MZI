@@ -58,7 +58,7 @@ class Gost3410Signature:
         u1 = (w * s) % q
         u2 = ((q - r) * w) % q
         v = (pow(g, u1, p) * pow(y, u2, p)) % p % q
-        return v == r
+        return v == r #подпись корректна, если v=r
 
     @staticmethod
     def generate_random_k(q):
@@ -79,7 +79,6 @@ class Gost3410Signature:
         hash_file_path = Path("hash.txt")
         signature_file_path = Path("signature.txt")
 
-        # Чтение сообщения из файла
         message = message_file_path.read_text(encoding='utf-8')
 
         # Генерация хеша сообщения и запись в файл

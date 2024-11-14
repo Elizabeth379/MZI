@@ -64,7 +64,7 @@ class SHA1:
             h3 = (h3 + d) & 0xFFFFFFFF
             h4 = (h4 + e) & 0xFFFFFFFF
 
-        # Конкатенация h0, h1, h2, h3, h4 в итоговый хэш
+        # Склейка h0, h1, h2, h3, h4 в итоговый хэш
         hash_bytes = struct.pack('>5I', h0, h1, h2, h3, h4)
         return hash_bytes
 

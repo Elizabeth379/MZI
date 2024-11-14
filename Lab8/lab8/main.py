@@ -10,7 +10,7 @@ def set_bit(number, bit_position, bit_value):
 
 
 def get_message_bits(message):
-    message_utf16 = message.encode("utf-16be")  # Big-endian для однородной кодировки
+    message_utf16 = message.encode("utf-16be")  # каждый символ - 2 байта
     message_bits = []
     for byte in message_utf16:
         for i in range(7, -1, -1):
@@ -42,7 +42,7 @@ def encode_message(image_path, message, output_path):
                     break
 
                 r, g, b = pixels[x, y]
-                r = set_bit(r, 0, message_bits[bit_index])
+                r = set_bit(r, 0, message_bits[bit_index]) #установка младшего бита красного канала тукущего пикселя
                 pixels[x, y] = (r, g, b)
                 bit_index += 1
 
@@ -67,7 +67,7 @@ def decode_message(image_path):
         # Рассчитываем общее количество бит
         total_bits = message_length * 8
         message_bytes = []
-        byte_value = 0
+        byte_value = 0 #сюда накапливается извлкаемый по каждому пикселю младший бит красного канала
         bit_index = 0
 
         for y in range(height):
@@ -80,7 +80,7 @@ def decode_message(image_path):
                 byte_value = (byte_value << 1) | bit
                 bit_index += 1
 
-                if bit_index % 8 == 0:
+                if bit_index % 8 == 0: #набралось 8 битоа
                     message_bytes.append(byte_value)
                     byte_value = 0
 
