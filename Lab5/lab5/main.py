@@ -7,7 +7,7 @@ with open("input.txt", "rb") as file:
 
 print(f"Initial message: {message_bytes.decode('utf-8')}")
 
-# Хещ GOST34.11
+# Хеш GOST34.11
 gost_hash = GOST3411.hash(message_bytes)
 print(f"GOST34.11 Hash:\n{bytes(gost_hash).hex()}")
 
